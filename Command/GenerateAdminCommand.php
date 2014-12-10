@@ -11,7 +11,7 @@
 
 namespace Sonata\AdminBundle\Command;
 
-use Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
+use Sensio\Bundle\GeneratorBundle\Command\Helper\QuestionHelper;
 use Sonata\AdminBundle\Generator\AdminGenerator;
 use Sonata\AdminBundle\Generator\ControllerGenerator;
 use Sonata\AdminBundle\Manipulator\ServicesManipulator;
@@ -128,8 +128,8 @@ class GenerateAdminCommand extends ContainerAwareCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getDialogHelper();
-        $dialog->writeSection($output, 'Welcome to the Sonata admin generator');
+        $question = $this->getQuestionHelper();
+        $question->writeSection($output, 'Welcome to the Sonata admin generator');
         $modelClass = $this->askAndValidate(
             $output,
             'The fully qualified model class',
@@ -160,9 +160,9 @@ class GenerateAdminCommand extends ContainerAwareCommand
             $input->setOption('manager', $managerType);
         }
 
-        $question = $dialog->getQuestion('Do you want to generate a controller', 'no', '?');
+        $question = $question->getQuestion('Do you want to generate a controller', 'no', '?');
 
-        if ($dialog->askConfirmation($output, $question, false)) {
+        if ($question->askConfirmation($output, $question, false)) {
             $controllerClassBasename = $this->askAndValidate(
                 $output,
                 'The controller class basename',
@@ -172,9 +172,9 @@ class GenerateAdminCommand extends ContainerAwareCommand
             $input->setOption('controller', $controllerClassBasename);
         }
 
-        $question = $dialog->getQuestion('Do you want to update the services YAML configuration file', 'yes', '?');
+        $question = $question->getQuestion('Do you want to update the services YAML configuration file', 'yes', '?');
 
-        if ($dialog->askConfirmation($output, $question)) {
+        if ($question->askConfirmation($output, $question)) {
             $path = $this->getBundle($bundleName)->getPath() . '/Resources/config/';
             $servicesFile = $this->askAndValidate(
                 $output,
@@ -263,9 +263,9 @@ class GenerateAdminCommand extends ContainerAwareCommand
      */
     private function askAndValidate(OutputInterface $output, $question, $default, $validator)
     {
-        $dialog = $this->getDialogHelper();
+        $question = $this->getQuestionHelper();
 
-        return $dialog->askAndValidate($output, $dialog->getQuestion($question, $default), $validator, false, $default);
+        return $question->askAndValidate($output, $question->getQuestion($question, $default), $validator, false, $default);
     }
 
     /**
@@ -345,17 +345,17 @@ class GenerateAdminCommand extends ContainerAwareCommand
     }
 
     /**
-     * @return DialogHelper
+     * @return QuestionHelper
      */
-    private function getDialogHelper()
+    private function getQuestionHelper()
     {
-        $dialogHelper = $this->getHelper('dialog');
+        $questionHelper = $this->getHelper('question');
 
-        if (!$dialogHelper instanceof DialogHelper) {
-            $dialogHelper = new DialogHelper();
-            $this->getHelperSet()->set($dialogHelper);
+        if (!$questionHelper instanceof QuestionHelper) {
+            $questionHelper = new QuestionHelper();
+            $this->getHelperSet()->set($questionHelper);
         }
 
-        return $dialogHelper;
+        return $questionHelper;
     }
 }
